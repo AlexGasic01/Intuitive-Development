@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intuitive Development LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c8a96e;
+      --gold-light: #d4b97e;
+      --bg: #0a0a0a;
+      --bg2: #0d0c0a;
+      --text: #f0ece4;
+      --muted: #7a7268;
+      --dim: #5a5550;
+      --border: #161412;
+      --border2: #1e1c19;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+    .logo span { color: var(--gold); }
+
+    .nav-links { display: flex; gap: 36px; align-items: center; }
+
+    .nav-link {
+      color: #a09888;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 14px 36px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-primary.sm { padding: 10px 24px; font-size: 0.78rem; }
+    .btn-primary.lg { padding: 16px 48px; font-size: 0.9rem; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #3a3530;
+      padding: 13px 35px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(#1a1814 1px, transparent 1px),
+        linear-gradient(90deg, #1a1814 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.3;
+    }
+
+    .glow {
+      position: absolute;
+      top: 20%; right: 8%;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; max-width: 900px; }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 5.5rem;
+      line-height: 1.08;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .hero-title-italic {
+      font-family: 'Playfair Display', serif;
+      font-size: 5.5rem;
+      line-height: 1.08;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 48px;
+      transition: opacity 0.4s ease;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+
+    .btn-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    /* STATS */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      margin-top: 100px;
+      position: relative;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .stat {
+      border-left: 1px solid #2a2822;
+      padding-left: 28px;
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: #5a5550;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* SERVICES */
+    #services {
+      padding: 100px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-header { margin-bottom: 64px; }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .service-card {
+      border: 1px solid var(--border2);
+      padding: 40px 32px;
+      transition: border-color 0.3s, transform 0.2s;
+      background: var(--bg2);
+    }
+    .service-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+    .service-icon {
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .service-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .service-desc {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #6a6460;
+      font-weight: 300;
+    }
+
+    /* CTA */
+    #cta {
+      padding: 100px 48px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,169,110,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-content { position: relative; }
+
+    .cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+    .cta-title em { font-weight: 400; color: var(--gold); }
+
+    .cta-sub {
+      font-size: 1rem;
+      color: var(--dim);
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 40px 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #3a3530;
+    }
+    .footer-logo span { color: var(--gold); }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: #3a3530;
+      letter-spacing: 0.05em;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .nav-links .nav-link { display: none; }
+      #hero { padding: 120px 24px 60px; }
+      .hero-title, .hero-title-italic { font-size: 3rem; }
+      #services { padding: 70px 24px; }
+      .services-grid { grid-template-columns: 1fr; }
+      #cta { padding: 70px 24px; }
+      .cta-title { font-size: 2.4rem; }
+      footer { padding: 32px 24px; }
+      .stats-row { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">Intuitive<span>.</span></div>
+    <div class="nav-links">
+      <a class="nav-link" href="#services">Services</a>
+      <a class="nav-link" href="#cta">Work</a>
+      <a class="nav-link" href="#cta">About</a>
+      <button class="btn-primary sm" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Get in Touch</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Software Development LLC</p>
+      <h1 class="hero-title">Software that feels</h1>
+      <h1 class="hero-title-italic" id="cycling-word">Intuitive.</h1>
+      <p class="hero-sub">We build software that gets out of the way — clean, considered, and crafted to work the way your users think.</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Start a Project</button>
+        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Our Work</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Projects Delivered</div></div>
+      <div class="stat"><div class="stat-num">8+</div><div class="stat-label">Years Experience</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Client Satisfaction</div></div>
+      <div class="stat"><div class="stat-num">24hr</div><div class="stat-label">Response Time</div></div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow">What We Do</p>
+        <div class="divider"></div>
+        <h2 class="section-title">Our Services</h2>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">◈</div>
+          <h3 class="service-title">Web Applications</h3>
+          <p class="service-desc">Fast, scalable web apps built with modern frameworks and clean architecture.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">◉</div>
+          <h3 class="service-title">Mobile Development</h3>
+          <p class="service-desc">Native and cross-platform mobile experiences that feel right in hand.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">◇</div>
+          <h3 class="service-title">API & Backend</h3>
+          <p class="service-desc">Robust, secure backends and integrations that power your product.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">◈</div>
+          <h3 class="service-title">Consulting</h3>
+          <p class="service-desc">Technical strategy and architecture guidance to move faster, smarter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-glow"></div>
+    <div class="cta-content">
+      <p class="section-eyebrow">Ready to Build?</p>
+      <h2 class="cta-title">Let's make something<br><em>worth using.</em></h2>
+      <p class="cta-sub">Tell us about your project. We'll get back to you within 24 hours.</p>
+      <button class="btn-primary lg">Start a Conversation</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Intuitive Development<span>.</span></div>
+    <p class="footer-copy">© 2026 Intuitive Development LLC</p>
+  </footer>
+
+  <script>
+    const words = ["Intuitive.", "Elegant.", "Reliable.", "Yours."];
+    let index = 0;
+    const el = document.getElementById("cycling-word");
+
+    setInterval(() => {
+      el.style.opacity = "0";
+      setTimeout(() => {
+        index = (index + 1) % words.length;
+        el.textContent = words[index];
+        el.style.opacity = "1";
+      }, 400);
+    }, 2200);
+  </script>
+
+</body>
+</html>
